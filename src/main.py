@@ -33,9 +33,10 @@ def change_feet_to_cm(data):
         else:
             return int (m.group(1)) * 12 + float (m.group (2))
 
-
-
 def pre_proccess(data):
+    # Deal with nan ==> 0
+    data = data.fillna(0)
+
     columns_to_delete = ['ID', 'Photo', 'Flag', 'Club Logo', 'Body Type', 'Real Face', 'Name']
     [data.drop([col_to_del], axis=1, inplace=True) for col_to_del in columns_to_delete]
 
@@ -47,18 +48,24 @@ def pre_proccess(data):
     data['Height'] = data['Height'].apply(change_feet_to_cm)
     data['Weight'] = data['Weight'].apply((lambda x: str (x)[:-3]))
 
+    # ST,RS,LW,...:
+    avail_positions = ['LS', 'ST', 'RS', 'LW', 'LF', 'CF','RF', 'RW', 'LAM', 'CAM',
+                       'RAM', 'LM', 'LCM', 'CM', 'RCM', 'RM', 'LWB','LDM', 'CDM',
+                       'RDM', 'RWB', 'LB', 'LCB', 'CB', 'RCB', 'RB']
+    for pos in avail_positions:
+        data[pos] = data[pos].apply(lambda x: int(x.split('+')[0]) + int(x.split('+')[1]) if type(x) is str else x)
+
     # data['Joined'] = data['Joined'].apply(lambda x: '0' if x==np.nan else int(str (x)[-4:]))
     data.drop(['Joined'], axis=1, inplace=True)
     data.drop(['Contract Valid Until'], axis=1, inplace=True)
     data.drop(['Loaned From'], axis=1, inplace=True)
     # data['Contract Valid Until'] = data['Contract Valid Until'].apply(lambda x: int(str (x)[-4:]))
 
+    # Dummies
     # Position
     natio_dummy = pd.get_dummies(data['Position'])
     data = pd.concat([data, natio_dummy], axis=1)
     data.drop(['Position'], axis=1, inplace=True)
-
-    # Dummies
     natio_dummy = pd.get_dummies(data['Nationality'])
     data = pd.concat([data, natio_dummy], axis=1)
     data.drop(['Nationality'], axis=1, inplace=True)
@@ -70,10 +77,6 @@ def pre_proccess(data):
     natio_dummy = pd.get_dummies(data['Preferred Foot'])
     data = pd.concat([data, natio_dummy], axis=1)
     data.drop(['Preferred Foot'], axis=1, inplace=True)
-    # Position
-    natio_dummy = pd.get_dummies(data['Position'])
-    data = pd.concat([data, natio_dummy], axis=1)
-    data.drop(['Position'], axis=1, inplace=True)
 
     # Work Rate ???
     natio_dummy = pd.get_dummies(data['Work Rate'])
