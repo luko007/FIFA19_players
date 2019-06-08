@@ -29,8 +29,10 @@ def change_feet_to_cm(data):
 def pre_process(data):
     data.replace(np.nan, 0.0, inplace=True)
     data.replace('', 0.0, inplace=True)
-    y = data['Potential']
-    data.drop(['Potential'], axis=1, inplace=True)
+    y = None
+    if 'Potential' in data.columns:
+        y = data['Potential']
+        data.drop(['Potential'], axis=1, inplace=True)
 
     columns_to_delete = ['ID', 'Photo', 'Flag', 'Club Logo', 'Body Type', 'Real Face', 'Name', 'Jersey Number']
     [data.drop([col_to_del], axis=1, inplace=True) for col_to_del in columns_to_delete]

@@ -3,6 +3,8 @@ import time
 from src.pre_process import load_data, pre_process
 from src.learner import model
 import pickle
+import numpy as np
+import pandas as pd
 
 LEARNER_OBJ_NAME = "learner.obj"
 
@@ -16,8 +18,8 @@ def main():
 
 
 def save_model(learner):
-    with open(LEARNER_OBJ_NAME, 'w') as filehandler:
-        pickle.dump(learner, filehandler)
+    with open(LEARNER_OBJ_NAME, 'wb') as output:
+        pickle.dump(learner, output)
 
 
 def load_model():
@@ -27,8 +29,12 @@ def load_model():
 
 
 def predict(X):
+    cleaned_X = pre_process(X)[0]
     learner = load_data()
     return learner.predict(X)
 
 if __name__ == "__main__":
-    main()
+    # main()
+    header = pd.read_csv('header_without_y.csv', header=None)
+    player = pd.read_csv('input.csv', header=header)
+    predict(player)
