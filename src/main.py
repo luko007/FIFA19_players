@@ -78,25 +78,25 @@ def lasso(X_test, X_train, y_test, y_train):
 
 
 def random_forest(X_test, X_train, y_test, y_train):
-    print ("\nRandom Forest Regressor")
-    OPTIMAL_DEPTH = 15
-    OPTIMAL_EST = 500
-    regr = RandomForestRegressor (max_depth=OPTIMAL_DEPTH,
-                                  n_estimators=OPTIMAL_EST,
-                                  random_state=18, )
-    regr = AdaBoostRegressor (regr, n_estimators=300, random_state=19)
-    regr.fit (X_train, y_train)
-    y_pred = regr.predict (X_test)
-    regressor_scoring (y_pred, y_test, "Random Forest")
-
-
-def grid_search_random_reg(X_train, y_train):
     """Results were:
     {'max_depth': 15, 'n_estimators': 500}
     Random Forest MSE is: 1.39288676662
     Random Forest Max error is: 10.322
     Random Forest Median error of: 0.438544869642
     """
+    print ("\nRandom Forest Regressor")
+    OPTIMAL_DEPTH = 15
+    OPTIMAL_EST = 500
+    regr = RandomForestRegressor (max_depth=OPTIMAL_DEPTH,
+                                  n_estimators=OPTIMAL_EST,
+                                  random_state=18, )
+    # regr = AdaBoostRegressor (regr, n_estimators=300, random_state=19)
+    regr.fit(X_train, y_train)
+    y_pred = regr.predict (X_test)
+    regressor_scoring(y_pred, y_test, "Random Forest")
+
+
+def grid_search_random_reg(X_train, y_train):
     gs_random_reg = GridSearchCV (
         estimator=RandomForestRegressor (),
         param_grid={
@@ -109,12 +109,10 @@ def grid_search_random_reg(X_train, y_train):
     print (best__random_reg_params)
     return best__random_reg_params
 
-
 def regressor_scoring(y_pred, y_test, name):
     print (name+" MSE is: %s" % mean_squared_error (y_test, y_pred))
     print (name+" Max error is: %s" % max_error (y_test, y_pred))
     print (name+" Median error of: %s" % median_absolute_error (y_test, y_pred))
-
 
 def knn(X_test, X_train, y_test, y_train):
     # k=1 is the best
@@ -127,7 +125,6 @@ def knn(X_test, X_train, y_test, y_train):
     fit_and_predict (X_train, y_train, X_test, y_test,
                      KNeighborsClassifier (n_neighbors=1))
 
-
 def fit_and_predict(X_train, y_train, X_test, y_test, classifier):
     classifier.fit(X_train, y_train)
     y_pred = classifier.predict(X_test)
@@ -135,12 +132,9 @@ def fit_and_predict(X_train, y_train, X_test, y_test, classifier):
     print('accuracy %s' % accuracy)
     return accuracy, y_pred
 
-
 def fix_arrays(data):
     data.replace('', 0.0, inplace=True)
     data.replace(np.nan, 0.0, inplace=True)
-
-
 
 def load_data():
     # Load all csv's to one file
@@ -167,11 +161,7 @@ def pre_proccess(data):
     y = data['Potential']
     data.drop(['Potential'], axis=1, inplace=True)
 
-    # Deal with nan ==> 0
-    # data.fillna(0, inplace=True)
-    # data.replace('', 0, inplace=True)
-
-    columns_to_delete = ['ID', 'Photo', 'Flag', 'Club Logo', 'Body Type', 'Real Face', 'Name']
+    columns_to_delete = ['ID', 'Photo', 'Flag', 'Club Logo', 'Body Type', 'Real Face', 'Name', 'Jersey Number']
     [data.drop([col_to_del], axis=1, inplace=True) for col_to_del in columns_to_delete]
 
     # Salaries
@@ -187,7 +177,11 @@ def pre_proccess(data):
                        'RAM', 'LM', 'LCM', 'CM', 'RCM', 'RM', 'LWB','LDM', 'CDM',
                        'RDM', 'RWB', 'LB', 'LCB', 'CB', 'RCB', 'RB']
     for pos in avail_positions:
-        data[pos] = data[pos].apply(lambda x: int(x.split('+')[0]) + int(x.split('+')[1]) if type(x) is str else x)
+        new_plus_pos_name = 'PLUS_FOR_'+pos
+        data[pos] = data[pos].apply(
+            lambda x: (float(x.split('+')[0]) + float(x.split('+')[1])) if type(x) is str else x)
+
+    # update_position_rating (avail_positions, data)
 
     # data['Joined'] = data['Joined'].apply(lambda x: '0' if x==np.nan else int(str (x)[-4:]))
     data.drop(['Joined'], axis=1, inplace=True)
@@ -201,25 +195,37 @@ def pre_proccess(data):
     # natio_dummy = pd.get_dummies(data['Position'])
     # data = pd.concat([data, natio_dummy], axis=1)
     data.drop(['Position'], axis=1, inplace=True)
+
     # natio_dummy = pd.get_dummies(data['Nationality'])
     # data = pd.concat([data, natio_dummy], axis=1)
     data.drop(['Nationality'], axis=1, inplace=True)
+
     # Club
     # natio_dummy = pd.get_dummies(data['Club'])
     # data = pd.concat([data, natio_dummy], axis=1)
     data.drop(['Club'], axis=1, inplace=True)
+
     # Preferred Foot
-    natio_dummy = pd.get_dummies(data['Preferred Foot'])
-    data = pd.concat([data, natio_dummy], axis=1)
+    # natio_dummy = pd.get_dummies(data['Preferred Foot'])
+    # data = pd.concat([data, natio_dummy], axis=1)
     data.drop(['Preferred Foot'], axis=1, inplace=True)
 
     # Work Rate ???
     # natio_dummy = pd.get_dummies(data['Work Rate'])
     # data = pd.concat([data, natio_dummy], axis=1)
     data.drop(['Work Rate'], axis=1, inplace=True)
+
     data = data.reset_index(drop=True)
 
     return data, y
+
+
+def update_position_rating(avail_positions, data):
+    for pos in avail_positions:
+        new_plus_pos_name = 'PLUS_FOR_' + pos
+        data[new_plus_pos_name] = data[pos].apply (
+            lambda x: float (x.split ('+')[1]) if type (x) is str else x)
+        data[pos] = data[pos].apply (lambda x: float (x.split ('+')[0]) if type (x) is str else x)
 
 
 def main():
@@ -229,6 +235,6 @@ def main():
 
 
 if __name__ == "__main__":
-    start = time.clock()
+    start = time.time()
     main()
-    print("Took %s seconds" % time.clock() - start)
+    print("\n\nTook %s seconds" % str(time.time() - start))
