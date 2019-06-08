@@ -1,0 +1,6 @@
+Random Forest Regressor
+Without : all_ratings, avail_positions, minimal dummies
+Random Forest MSE is: 1.35867109329
+Random Forest Max error is: 8.724
+Random Forest Median error of: 0.398386868687
+
