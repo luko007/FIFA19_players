@@ -43,7 +43,7 @@ def model(X, y):
     from sklearn.neighbors import KNeighborsClassifier
     from sklearn.model_selection import GridSearchCV
 
-
+    # k=1 is the best
     print("KNN")
     param_grid = {'n_neighbors': np.arange (1, 30)}
     knn_cv = GridSearchCV (KNeighborsClassifier(), param_grid, cv=5)
