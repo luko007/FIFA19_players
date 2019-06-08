@@ -19,28 +19,17 @@ def model(X, y):
     fix_arrays(X_train)
     fix_arrays(X_test)
 
-    # [fix_arrays(arr) for arr in [X_train, X_test]]
-
-    # TEST = (X[int(X.shape[0]*0.72):int(X.shape[0]*0.73)])
-    # TEST.replace('', 0.0, inplace=True)
-    # TEST.replace(np.nan, 0.0, inplace=True)
-    # nume = []
-    # for a in TEST.values:
-    #     for b in a:
-    #         nume.append(isnumeric(b))
-    # a = [a for a in X_test.values]
-    # b = [b for b in a]
-    # print([isnumeric(s) for s in b])
-
     # svm_learner (X_test, X_train, y_test, y_train)
 
     # linear_reg (X_test, X_train, y_test, y_train)
 
-    random_forest (X_test, X_train, y_test, y_train)
+    learner = random_forest (X_test, X_train, y_test, y_train)
 
     # lasso (X_test, X_train, y_test, y_train)
 
     # knn(X_test, X_train, y_test, y_train)
+
+    return learner
 
 
 def svm_learner(X_test, X_train, y_test, y_train):
@@ -55,13 +44,7 @@ def svm_learner(X_test, X_train, y_test, y_train):
 
 
 def linear_reg(X_test, X_train, y_test, y_train):
-    """ Static results:
-    Linear Regression MSE is: 5.84141928462
-    Linear Regression Max error is: 11.1967486864
-    Linear Regression Median error of: 1.54992394626
-    """
     print ("Linear Regression")
-    # normalize=True ?
     lin_reg = LinearRegression ().fit (X_train, y_train)
     y_pred = lin_reg.predict (X_test)
     regressor_scoring (y_pred, y_test, "Linear Regression")
@@ -75,12 +58,6 @@ def lasso(X_test, X_train, y_test, y_train):
 
 
 def random_forest(X_test, X_train, y_test, y_train):
-    """Results were:
-    {'max_depth': 15, 'n_estimators': 500}
-    Random Forest MSE is: 1.39288676662
-    Random Forest Max error is: 10.322
-    Random Forest Median error of: 0.438544869642
-    """
     print ("\nRandom Forest Regressor")
     OPTIMAL_DEPTH = 15
     OPTIMAL_EST = 500
@@ -91,6 +68,7 @@ def random_forest(X_test, X_train, y_test, y_train):
     regr.fit(X_train, y_train)
     y_pred = regr.predict (X_test)
     regressor_scoring(y_pred, y_test, "Random Forest")
+    return regr
 
 
 def grid_search_random_reg(X_train, y_train):
@@ -128,3 +106,5 @@ def fit_and_predict(X_train, y_train, X_test, y_test, classifier):
     accuracy = accuracy_score(y_pred, y_test)
     print('accuracy %s' % accuracy)
     return accuracy, y_pred
+
+
