@@ -5,6 +5,8 @@ from src.learner import model
 import pickle
 import numpy as np
 import pandas as pd
+import os
+import math
 
 LEARNER_OBJ_NAME = "learner.obj"
 
@@ -23,18 +25,21 @@ def save_model(learner):
 
 
 def load_model():
-    with open(LEARNER_OBJ_NAME, 'w') as learner_obj:
+    assert (os.path.getsize(LEARNER_OBJ_NAME) > 0)
+    with open(LEARNER_OBJ_NAME, 'rb') as learner_obj:
         learner = pickle.load(learner_obj)
     return learner
 
 
 def predict(X):
-    cleaned_X = pre_process(X)[0]
-    learner = load_data()
-    return learner.predict(X)
+    """
+    X need to have the following attributes: Age, Overall, Value, Wage, Skill Moves, Release Clause
+    """
+    learner = load_model()
+    return int(learner.predict(X)**(1/3))
 
 if __name__ == "__main__":
-    # main()
-    header = pd.read_csv('header_without_y.csv', header=None)
-    player = pd.read_csv('input.csv', header=header)
-    predict(player)
+    main()
+    player = np.array([18.0, 90, 47000000.0, 41000.0, 4.0, 0.0]).reshape(1,-1)
+    print(predict(player))
+

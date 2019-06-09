@@ -4,6 +4,18 @@ Random Forest MSE is: 1.35867109329
 Random Forest Max error is: 8.724
 Random Forest Median error of: 0.398386868687
 
+When also deleting: 'Special', 'International Reputation', 'Height', 'Weight':
+Random Forest MSE is: 1.27361674034
+Random Forest Max error is: 8.748
+Random Forest Median error of: 0.34706327848
+
+Without WeakFoot:
+Random Forest MSE is: 1.25960118146
+Random Forest Max error is: 8.756
+Random Forest Median error of: 0.334471279004
+
+###
+
 With the above.
 {'max_depth': 15, 'n_estimators': 500}
 Random Forest MSE is: 1.39288676662

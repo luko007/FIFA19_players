@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from src.pre_process import fix_arrays
 
 def model(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size = 0.8, random_state = 19, shuffle=True)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size = 0.5, random_state = 19, shuffle=True)
     fix_arrays(X_train)
     fix_arrays(X_test)
 
