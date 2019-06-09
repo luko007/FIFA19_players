@@ -78,7 +78,6 @@ def pre_process(data):
     dummies_or_drop (data)
 
     data = data.reset_index(drop=True)
-
     return data, y
 
 
