@@ -1,10 +1,10 @@
 # FIFA19 Potential Predictor
 ML project that given FIFA attributes of a player, predicts its Potential rating.
 
-###DATA
+### DATA
 Dataset was downloaded from kaggle and contains all players from FIFA19.
 
-###Learner
+### Learner
 Learner uses Random Forest Regressor with accurcies that can be found in 'Accuracy' file. 
 Some models, such as knn and linear regression, can be found in 'Learner'. 
 RF Regressor was trained with Grid Search and CV. 
